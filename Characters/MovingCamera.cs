@@ -1,11 +1,12 @@
 using Godot;
 
-namespace WorldTransformation;
+namespace WorldTransformation.Characters;
 
 [GlobalClass]
 internal sealed partial class MovingCamera : Camera3D
 {
   [Export] private float _moveSpeed = 25f;
+  [Export] private float _runSpeed = 50f;
   [Export] private float _mouseSensitivity = .005f;
   [Export] private float _tiltLimit = 70f;
 
@@ -17,9 +18,6 @@ internal sealed partial class MovingCamera : Camera3D
   }
 
   public override void _UnhandledInput(InputEvent @event)
-    => HandleMouseMovement(@event);
-
-  private void HandleMouseMovement(InputEvent @event)
   {
     if (@event is not InputEventMouseMotion mouseMotion)
       return;
@@ -40,7 +38,9 @@ internal sealed partial class MovingCamera : Camera3D
     float forward = Input.GetAxis("Down", "Up");
     float right = Input.GetAxis("Left", "Right");
 
-    Vector3 velocity = (-GlobalBasis.Z * forward + GlobalBasis.X * right).Normalized() * _moveSpeed;
+    float speed = Input.IsActionPressed("Run") ? _runSpeed : _moveSpeed;
+
+    Vector3 velocity = (-GlobalBasis.Z * forward + GlobalBasis.X * right).Normalized() * speed;
 
     GlobalPosition += velocity * (float)delta;
   }

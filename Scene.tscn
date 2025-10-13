@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://boasc0lbt1gjd"]
+[gd_scene load_steps=15 format=3 uid="uid://boasc0lbt1gjd"]
 
 [ext_resource type="Shader" uid="uid://6sh33yt71dke" path="res://Shaders/cube.gdshader" id="1_4cvuw"]
 [ext_resource type="Script" uid="uid://beaxhxwvhlubu" path="res://Characters/MovingCamera.cs" id="1_t6lng"]
@@ -6,6 +6,11 @@
 [ext_resource type="Script" uid="uid://mspbpm0am7j6" path="res://Algo/Transformer.cs" id="4_7mckg"]
 [ext_resource type="Script" uid="uid://cbdx84irrs3l8" path="res://UI/SubmitButton.cs" id="5_66br4"]
 [ext_resource type="Script" uid="uid://bp3pdxak6tcxv" path="res://UI/Ui.cs" id="5_eort7"]
+[ext_resource type="Script" uid="uid://cni0ek6n1nv3i" path="res://UI/MatrixEdit.cs" id="6_xcudr"]
+[ext_resource type="Script" uid="uid://btvkx3xv0dtwm" path="res://UI/TransformUpdate.cs" id="7_dob7g"]
+[ext_resource type="Theme" uid="uid://cvn77e4yku7f4" path="res://Themes/Toggles.tres" id="8_tysh6"]
+[ext_resource type="Script" uid="uid://dvqdkyvxy8506" path="res://UI/LerpSpeedEdit.cs" id="9_q6i3i"]
+[ext_resource type="Script" uid="uid://c6t2th2gijxge" path="res://UI/PeriodEdit.cs" id="10_rjlwc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_j2eoc"]
 render_priority = 0
@@ -16,17 +21,8 @@ material = SubResource("ShaderMaterial_j2eoc")
 flip_faces = true
 size = Vector3(200, 200, 200)
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_04pw2"]
-sky_top_color = Color(6.160736e-06, 0.68716836, 0.91161966, 1)
-sky_horizon_color = Color(0.71523273, 0.93880266, 0.9999998, 1)
-sky_curve = 0.06997754
-
-[sub_resource type="Sky" id="Sky_t6lng"]
-sky_material = SubResource("ProceduralSkyMaterial_04pw2")
-
-[sub_resource type="Environment" id="Environment_4cvuw"]
-background_mode = 2
-sky = SubResource("Sky_t6lng")
+[sub_resource type="LabelSettings" id="LabelSettings_dob7g"]
+font_size = 14
 
 [node name="Scene" type="Node3D"]
 
@@ -36,17 +32,13 @@ mesh = SubResource("BoxMesh_04pw2")
 [node name="MovingCamera" type="Camera3D" parent="."]
 script = ExtResource("1_t6lng")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_4cvuw")
-
 [node name="Transformer" type="Node" parent="." node_paths=PackedStringArray("_timer", "_susceptibleGroup")]
 script = ExtResource("4_7mckg")
-_timer = NodePath("../Timer")
+_timer = NodePath("../TransformTimer")
 _susceptibleGroup = NodePath("../SusceptibleGroup")
 
-[node name="Timer" type="Timer" parent="."]
+[node name="TransformTimer" type="Timer" parent="."]
 wait_time = 2.0
-autostart = true
 
 [node name="SusceptibleGroup" type="Node" parent="."]
 
@@ -439,12 +431,15 @@ grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("5_eort7")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI"]
+[node name="HBoxContainer" type="HBoxContainer" parent="UI"]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="Label" type="Label" parent="UI/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "Enter the desired transform matrix.
 E.g.:
@@ -452,7 +447,7 @@ E.g.:
 1 2 4
 0 2 4"
 
-[node name="ColorRect" type="ColorRect" parent="UI/VBoxContainer/Label"]
+[node name="ColorRect" type="ColorRect" parent="UI/HBoxContainer/VBoxContainer/Label"]
 z_index = -1
 layout_mode = 1
 anchors_preset = 15
@@ -462,19 +457,21 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.49803922)
 
-[node name="TextEdit" type="TextEdit" parent="UI/VBoxContainer"]
+[node name="MatrixEdit" type="TextEdit" parent="UI/HBoxContainer/VBoxContainer" node_paths=PackedStringArray("_submitButton")]
 layout_mode = 2
-placeholder_text = "Your matrix here..."
+placeholder_text = "Shift+Enter or button to submit..."
 scroll_fit_content_height = true
+script = ExtResource("6_xcudr")
+_submitButton = NodePath("../SubmitButton")
 
-[node name="SubmitButton" type="Button" parent="UI/VBoxContainer" node_paths=PackedStringArray("_textEdit", "_transformer")]
+[node name="SubmitButton" type="Button" parent="UI/HBoxContainer/VBoxContainer" node_paths=PackedStringArray("_textEdit", "_transformer")]
 layout_mode = 2
 mouse_filter = 1
 text = "Submit
 "
 script = ExtResource("5_66br4")
-_textEdit = NodePath("../TextEdit")
-_transformer = NodePath("../../../Transformer")
+_textEdit = NodePath("../MatrixEdit")
+_transformer = NodePath("../../../../Transformer")
 
 [node name="Label" type="Label" parent="UI"]
 layout_mode = 1
@@ -485,3 +482,52 @@ offset_left = -40.0
 offset_bottom = 23.0
 grow_horizontal = 0
 text = "Hint: Press esc to toggle mouse movement."
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -201.0
+offset_right = 187.0
+grow_vertical = 0
+theme = ExtResource("8_tysh6")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/VBoxContainer2"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+text = "Keep updating transform"
+label_settings = SubResource("LabelSettings_dob7g")
+
+[node name="TransformUpdate" type="CheckButton" parent="UI/VBoxContainer2/HBoxContainer" node_paths=PackedStringArray("_transformer")]
+layout_mode = 2
+script = ExtResource("7_dob7g")
+_transformer = NodePath("../../../../Transformer")
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="UI/VBoxContainer2"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/VBoxContainer2/HBoxContainer2"]
+layout_mode = 2
+text = "Lerp speed"
+
+[node name="LerpSpeedEdit" type="LineEdit" parent="UI/VBoxContainer2/HBoxContainer2" node_paths=PackedStringArray("_transformer")]
+layout_mode = 2
+placeholder_text = "Speed here..."
+script = ExtResource("9_q6i3i")
+_transformer = NodePath("../../../../Transformer")
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="UI/VBoxContainer2"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/VBoxContainer2/HBoxContainer3"]
+layout_mode = 2
+text = "Transform period"
+
+[node name="PeriodEdit" type="LineEdit" parent="UI/VBoxContainer2/HBoxContainer3" node_paths=PackedStringArray("_timer")]
+layout_mode = 2
+placeholder_text = "Period..."
+script = ExtResource("10_rjlwc")
+_timer = NodePath("../../../../TransformTimer")

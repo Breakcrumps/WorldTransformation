@@ -1,0 +1,5 @@
+[gd_resource type="Theme" format=3 uid="uid://cvn77e4yku7f4"]
+
+[resource]
+Label/font_sizes/font_size = 14
+LineEdit/font_sizes/font_size = 14

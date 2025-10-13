@@ -1,6 +1,8 @@
 using Godot;
-using WorldTransformation;
+using WorldTransformation.Algo;
 using WorldTransformation.Types;
+
+namespace WorldTransformation.UI;
 
 [GlobalClass]
 internal sealed partial class SubmitButton : Button
@@ -11,7 +13,7 @@ internal sealed partial class SubmitButton : Button
   public override void _Ready()
     => Pressed += SubmitMatrix;
 
-  private void SubmitMatrix()
+  internal void SubmitMatrix()
   {
     if (_textEdit is null || _transformer is null)
       return;
@@ -32,7 +34,9 @@ internal sealed partial class SubmitButton : Button
     }
 
     _transformer.Transform = Matrix.FromArray(nums);
+    _transformer.ExecuteTransform();
 
     _textEdit.Clear();
+    _textEdit.ReleaseFocus();
   }
 }

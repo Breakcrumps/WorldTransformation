@@ -1,5 +1,7 @@
 using Godot;
 
+namespace WorldTransformation.UI;
+
 [GlobalClass]
 internal sealed partial class Ui : Control
 {

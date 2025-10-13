@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using WorldTransformation.Types;
 
-namespace WorldTransformation;
+namespace WorldTransformation.Algo;
 
 [GlobalClass]
 internal sealed partial class Transformer : Node
@@ -12,7 +13,9 @@ internal sealed partial class Transformer : Node
   [Export] private Node? _susceptibleGroup;
 
   [ExportGroup("Parameters")]
-  [Export] private float _lerpSpeed = 2f;
+  [Export] internal float LerpSpeed { private get; set; } = 2f;
+
+  private bool _canTransform;
 
   private readonly List<StaticBody3D> _bodies = [];
   private List<Vector3> _wantedPositions = [];
@@ -36,14 +39,23 @@ internal sealed partial class Transformer : Node
       }
     }
 
-    _timer.Timeout += () => _wantedPositions = [.. _wantedPositions.Select(v => Transform.Apply(v))];
+    _timer.Timeout += ExecuteTransform;
   }
+
+  internal void ExecuteTransform()
+    => _wantedPositions = [.. _wantedPositions.Select(Transform.Apply)];
 
   public override void _PhysicsProcess(double delta)
   {
     for (int i = 0; i < _bodies.Count; i++)
     {
-      _bodies[i].GlobalPosition = _bodies[i].GlobalPosition.Lerp(_wantedPositions[i], _lerpSpeed * (float)delta);
+      _bodies[i].GlobalPosition = _bodies[i].GlobalPosition.Lerp(_wantedPositions[i], LerpSpeed * (float)delta);
     }
   }
+
+  internal void EnableTransform()
+    => _timer?.Start();
+
+  internal void DisableTransform()
+    => _timer?.Stop();
 }
