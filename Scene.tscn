@@ -81,21 +81,20 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.49803922)
 
-[node name="MatrixEdit" type="TextEdit" parent="UI/HBoxContainer/VBoxContainer" node_paths=PackedStringArray("_submitButton")]
+[node name="MatrixEdit" type="TextEdit" parent="UI/HBoxContainer/VBoxContainer" node_paths=PackedStringArray("_transformer")]
 layout_mode = 2
 placeholder_text = "Shift+Enter or button to submit..."
 scroll_fit_content_height = true
 script = ExtResource("6_xcudr")
-_submitButton = NodePath("../SubmitButton")
+_transformer = NodePath("../../../../Transformer")
 
-[node name="SubmitButton" type="Button" parent="UI/HBoxContainer/VBoxContainer" node_paths=PackedStringArray("_textEdit", "_transformer")]
+[node name="SubmitButton" type="Button" parent="UI/HBoxContainer/VBoxContainer" node_paths=PackedStringArray("_matrixEdit")]
 layout_mode = 2
 mouse_filter = 1
 text = "Submit
 "
 script = ExtResource("5_66br4")
-_textEdit = NodePath("../MatrixEdit")
-_transformer = NodePath("../../../../Transformer")
+_matrixEdit = NodePath("../MatrixEdit")
 
 [node name="Label" type="Label" parent="UI"]
 layout_mode = 1
