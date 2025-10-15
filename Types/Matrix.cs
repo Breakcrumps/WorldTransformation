@@ -16,9 +16,9 @@ internal sealed record Matrix
 
   internal static Matrix FromArray(float[] ints) => new()
   {
-    X = new Vector3(ints[0], ints[1], ints[2]),
-    Y = new Vector3(ints[3], ints[4], ints[5]),
-    Z = new Vector3(ints[6], ints[7], ints[8])
+    X = new Vector3(ints[0], ints[3], ints[6]),
+    Y = new Vector3(ints[1], ints[4], ints[7]),
+    Z = new Vector3(ints[2], ints[5], ints[8])
   };
 
   internal static Matrix Identity => new()

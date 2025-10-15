@@ -35,13 +35,10 @@ script = ExtResource("1_t6lng")
 
 [node name="Transformer" type="Node" parent="." node_paths=PackedStringArray("_timer", "_susceptibleGroup")]
 script = ExtResource("4_7mckg")
-_lerp = false
-_functional = true
 _timer = NodePath("../TransformTimer")
 _susceptibleGroup = NodePath("../SusceptibleGroup")
 
 [node name="TransformTimer" type="Timer" parent="."]
-wait_time = 0.017
 
 [node name="SusceptibleGroup" type="Node" parent="."]
 script = ExtResource("4_3hyav")
