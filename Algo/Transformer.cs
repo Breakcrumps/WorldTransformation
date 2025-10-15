@@ -9,6 +9,7 @@ namespace WorldTransformation.Algo;
 [GlobalClass]
 internal sealed partial class Transformer : Node
 {
+  [Export] private bool _lerp = true;
   [Export] private bool _functional;
   
   [Export] private Timer? _timer;
@@ -22,16 +23,16 @@ internal sealed partial class Transformer : Node
   private List<Vector3> _wantedPositions = [];
 
   internal Matrix Transform { private get; set; } = Matrix.Identity;
-  internal FunctionMatrix FunctionTransform { private get; set; } = new(
-    new FunctionVector(x => -.5f + .001f * x, y => .1f - .07f * y, z => -.07f * .01f * z),
-    new FunctionVector(x => .05f + .09f * x, y => .05f + .01f * y, z => .7f + .01f * z),
-    new FunctionVector(x => .01f * x, y => .09f + .04f * y, z => .01f * z)
-  );
   // internal FunctionMatrix FunctionTransform { private get; set; } = new(
-  //   new FunctionVector(x => .07f * x, y => .1f * Mathf.Sin(y), z => .5f),
-  //   new FunctionVector(x => .001f / x, y => .05f * Mathf.Cos(y), z => 0),
-  //   new FunctionVector(x => .0001f + .01f * x, y => -.5f * Mathf.Cosh(y), z => 1)
+  //   new FunctionVector(x => -.5f + .001f * x, y => .1f - .07f * y, z => -.07f * .01f * z),
+  //   new FunctionVector(x => .05f + .09f * x, y => .05f + .01f * y, z => .7f + .01f * z),
+  //   new FunctionVector(x => .01f * x, y => .09f + .04f * y, z => .01f * z)
   // );
+  internal FunctionMatrix FunctionTransform { private get; set; } = new(
+    new FunctionVector(Mathf.Cos, Mathf.Sin, z => 0f),
+    new FunctionVector(x => -Mathf.Sin(x), Mathf.Cos, z => 0f),
+    new FunctionVector(x => 0f, y => 0f, z => 1f)
+  );
 
   public override void _Ready()
   {
@@ -67,7 +68,7 @@ internal sealed partial class Transformer : Node
       if (pos.X == 0)
         continue;
 
-      _wantedPositions[i] = FunctionTransform.Apply(_wantedPositions[i], pos.X * .2f, pos.Y * .2f, pos.Z * .2f);
+      _wantedPositions[i] = FunctionTransform.Apply(_wantedPositions[i], .001f, .001f, .001f);
     }
   }
 
@@ -78,7 +79,11 @@ internal sealed partial class Transformer : Node
     
     for (int i = 0; i < _susceptibleGroup.Bodies.Count; i++)
     {
-      _susceptibleGroup.Bodies[i].GlobalPosition = _susceptibleGroup.Bodies[i].GlobalPosition.Lerp(_wantedPositions[i], LerpSpeed * (float)delta);
+      _susceptibleGroup.Bodies[i].GlobalPosition = (
+        _lerp
+        ? _susceptibleGroup.Bodies[i].GlobalPosition.Lerp(_wantedPositions[i], LerpSpeed * (float)delta)
+        : _susceptibleGroup.Bodies[i].GlobalPosition = _wantedPositions[i]
+      );
     }
   }
 

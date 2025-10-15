@@ -6,12 +6,12 @@ internal sealed partial class MatrixEdit : TextEdit
 {
   [Export] private SubmitButton? _submitButton;
   
-  public override void _Input(InputEvent @event)
+  public override void _UnhandledInput(InputEvent @event)
   {
     if (@event is not InputEventKey eventKey)
       return;
 
-    if (Key.Key0 <= eventKey.Keycode && eventKey.Keycode <= Key.Key9)
+    if (eventKey.IsActionPressed("MatrixEdit"))
       GrabFocus();
 
     if (!HasFocus())
